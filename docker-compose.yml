@@ -1,0 +1,49 @@
+version: "3.8"
+services:
+  db:
+    image: postgres
+    container_name: local_pgdb
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: louis
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: school_db
+    volumes:
+      - local_pgdata:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: louis.gaillard@codejourney.fr
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+  mongodb:
+    image: mongo:6-jammy
+    ports:
+      - '27017:27017'
+    volumes:
+      - dbdata6:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: louis
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: student_db
+  eureka:
+    container_name: eureka_server
+    image: openjdk:17-jdk-slim
+    working_dir: /app
+    volumes:
+      - "./eureka/target/eureka-0.0.1-SNAPSHOT.jar:/app/eureka-server.jar"
+    command: [ "java", "-jar", "eureka-server.jar" ]
+    ports:
+      - "8762:8761"
+
+volumes:
+  local_pgdata:
+  pgadmin-data:
+  dbdata6:
